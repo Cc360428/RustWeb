@@ -1,0 +1,11 @@
+version: "3"
+services:
+  rust_web:
+    container_name: rust_web
+    image: cc360428:rust-web
+    ports:
+      - "8089:8000"
+    volumes:
+      - /etc/hosts:/etc/hosts
+    command: ./rust_web
+    restart: "always"
