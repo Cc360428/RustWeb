@@ -4,4 +4,3 @@ fn connection_redis() -> redis::RedisResult<Connection> {
     Ok(con)
 }
 
-embed_migrations!();
