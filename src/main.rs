@@ -1,21 +1,28 @@
-use actix_web::{ App, HttpServer};
+use actix_web::{web, App, HttpServer};
 use std::env;
-use utils::utils::send_telegram; // Import send_telegram
+use utils::utils::send_telegram;
+
+use routers::product::init_routes;
+use routers::routers::index;
+
+mod routers;
 mod utils;
+
+fn configure_app(app: &mut web::ServiceConfig) {
+    app.route("/", web::get().to(index));
+    app.service(web::scope("product").configure(init_routes));
+}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-
     let address = format!(
         "{}:{}",
         env::var("ADDR").unwrap_or_else(|_| "0.0.0.0".to_string()),
         "8080".to_string()
     );
 
-
     let variables = vec!["send_tg", "chat_id", "token"];
     let mut config: std::collections::HashMap<String, String> = std::collections::HashMap::new();
-
 
     for var in &variables {
         match env::var(var) {
@@ -44,13 +51,18 @@ async fn main() -> std::io::Result<()> {
         }
     }
 
-    println!("-------------------Starting server on {}", address);
+    println!("Starting server on {}", address);
 
-    // Start the web server
-    let server = HttpServer::new(move || {
-        App::new()
-    });
+    HttpServer::new(|| App::new().configure(configure_app))
+        .bind(address)?
+        .run()
+        .await
 
-    // Run the server
-    server.bind(&address)?.run().await
+    // HttpServer::new(|| App::new()
+    //     .route("/",web::get().to(index))
+    //     .service(web::scope("/product").configure(init_routes))
+    //     .service(hello))
+    //     .bind(address)?
+    //     .run()
+    //     .await
 }
