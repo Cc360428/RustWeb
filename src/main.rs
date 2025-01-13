@@ -1,20 +1,24 @@
 use actix_web::{web, App, HttpServer};
-use std::env;
-use utils::utils::send_telegram;
-
+use log::info;
 use routers::product::init_routes;
 use routers::routers::index;
+use std::env;
+
+use utils::log::init_logger;
+use utils::utils::send_telegram;
 
 mod routers;
 mod utils;
 
 fn configure_app(app: &mut web::ServiceConfig) {
     app.route("/", web::get().to(index));
-    app.service(web::scope("product").configure(init_routes));
+    app.configure(init_routes);
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    init_logger();
+    info!("Starting server at: http://localhost:8080/");
     let address = format!(
         "{}:{}",
         env::var("ADDR").unwrap_or_else(|_| "0.0.0.0".to_string()),
@@ -51,18 +55,11 @@ async fn main() -> std::io::Result<()> {
         }
     }
 
+    info!("log Starting server on:{}", address); // 记录日志
     println!("Starting server on {}", address);
 
     HttpServer::new(|| App::new().configure(configure_app))
         .bind(address)?
         .run()
         .await
-
-    // HttpServer::new(|| App::new()
-    //     .route("/",web::get().to(index))
-    //     .service(web::scope("/product").configure(init_routes))
-    //     .service(hello))
-    //     .bind(address)?
-    //     .run()
-    //     .await
 }
