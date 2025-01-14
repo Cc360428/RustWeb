@@ -3,10 +3,14 @@ use log::info;
 use routers::product::init_routes;
 use routers::routers::index;
 use std::env;
+use crate::pkg::log::log::init_logger;
+use crate::pkg::telegram::telegram::send_telegram;
 
-use utils::log::init_logger;
-use utils::utils::send_telegram;
-
+mod pkg {
+    pub mod log;
+    pub mod redis;
+    pub mod telegram;
+}
 mod routers;
 mod utils;
 
@@ -44,7 +48,6 @@ async fn main() -> std::io::Result<()> {
         if send_tg == "1" {
             let chat_id = config.get("chat_id").and_then(|s| s.parse::<i64>().ok());
             let token = config.get("token");
-
             if let (Some(chat_id), Some(token)) = (chat_id, token) {
                 if let Err(err) = send_telegram(chat_id, token, "Start Run OK!").await {
                     eprintln!("Error sending Telegram message: {:?}", err);

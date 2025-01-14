@@ -1,10 +1,10 @@
 use chrono::Local;
 use env_logger::Builder;
+use std::env;
 use std::fs;
 use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::Path;
-use std::env;
 
 pub fn init_logger() {
     // 读取环境变量 LogCheck 是否为 "true"
