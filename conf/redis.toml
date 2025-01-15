@@ -1,0 +1,43 @@
+platform = ['Indonesia', 'IndonesiaBack', 'Malaysia', 'Brazil']
+
+[brazil]
+envinfo = ['Dev']
+
+[brazil.env]
+[brazil.env.dev]
+db = 0
+host = '172.13.4.64'
+password = ''
+port = 6000
+
+
+[indonesia]
+envinfo = ['Dev']
+
+[indonesia.env]
+[indonesia.env.dev]
+db = 0
+host = '172.13.5.12'
+password = ''
+port = 6000
+
+
+[indonesiaback]
+envinfo = ['Dev']
+
+[indonesiaback.env]
+[indonesiaback.env.dev]
+db = 0
+host = '172.13.0.47'
+password = 'newdev'
+port = 6379
+
+[malaysia]
+envinfo = ['Dev']
+
+[malaysia.env]
+[malaysia.env.dev]
+db = 0
+host = '172.13.9.75'
+password = ''
+port = 6000

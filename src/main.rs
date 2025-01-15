@@ -1,13 +1,15 @@
 use crate::pkg::log::log::init_logger;
+use crate::pkg::redis::kv::KvItem;
 use crate::pkg::telegram::telegram::send_telegram;
 use actix_web::{web, App, HttpServer};
+// use configs::redis::start_monitoring;
 use log::info;
 use pkg::redis::kv::KvStore;
 use routers::product::init_routes;
 use routers::routers::index;
 use std::env;
-use crate::pkg::redis::kv::KvItem;
 
+// mod configs;
 mod pkg {
     pub mod log;
     pub mod redis;
@@ -25,6 +27,13 @@ fn configure_app(app: &mut web::ServiceConfig) {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     init_logger();
+
+    // start_monitoring();
+    // let config = configs::redis::CONFIG.lock().unwrap();
+    // println!(
+    // "Initial config: {:?}",
+    // *config.malaysia.env.get("dev").unwrap()
+    // );
 
     // TODO 为了不报错
     // Set a key-value pair
@@ -56,7 +65,6 @@ async fn main() -> std::io::Result<()> {
 
     // Delete the KvItem
     KvStore::del_kv_item(&kv_item).expect("Failed to delete KvItem");
-
 
     info!("Starting server at: http://localhost:8080/");
     let address = format!(
