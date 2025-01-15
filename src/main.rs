@@ -1,16 +1,19 @@
+use crate::pkg::log::log::init_logger;
+use crate::pkg::telegram::telegram::send_telegram;
 use actix_web::{web, App, HttpServer};
 use log::info;
+use pkg::redis::kv::KvStore;
 use routers::product::init_routes;
 use routers::routers::index;
 use std::env;
-use crate::pkg::log::log::init_logger;
-use crate::pkg::telegram::telegram::send_telegram;
+use crate::pkg::redis::kv::KvItem;
 
 mod pkg {
     pub mod log;
     pub mod redis;
     pub mod telegram;
 }
+
 mod routers;
 mod utils;
 
@@ -22,6 +25,39 @@ fn configure_app(app: &mut web::ServiceConfig) {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     init_logger();
+
+    // TODO 为了不报错
+    // Set a key-value pair
+    KvStore::set_kv("my_key1", "my_value").expect("Failed to set key-value pair");
+
+    // Get the value associated with the key
+    match KvStore::get_kv("my_key").expect("Failed to get value") {
+        Some(value) => println!("Value: {}", value),
+        None => println!("Key not found"),
+    }
+
+    // Delete the key-value pair
+    KvStore::del_kv("my_key").expect("Failed to delete key");
+
+    // Create a KvItem
+    let kv_item = KvItem {
+        key: "another_key".to_string(),
+        value: "another_value".to_string(),
+    };
+
+    // Set the KvItem
+    KvStore::set_kv_item(&kv_item).expect("Failed to set KvItem");
+
+    // Get the KvItem
+    match KvStore::get_kv_item("another_key").expect("Failed to get KvItem") {
+        Some(item) => println!("Retrieved KvItem: {:?}", item),
+        None => println!("KvItem not found"),
+    }
+
+    // Delete the KvItem
+    KvStore::del_kv_item(&kv_item).expect("Failed to delete KvItem");
+
+
     info!("Starting server at: http://localhost:8080/");
     let address = format!(
         "{}:{}",
